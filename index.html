@@ -64,10 +64,26 @@
       -webkit-backdrop-filter: blur(14px);
     }
 
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+    }
+
     .header-logo img {
       height: 38px;
       width: auto;
       display: block;
+    }
+
+    .header-logo-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      line-height: 1;
     }
 
     .header-right {
@@ -601,7 +617,8 @@
   <!-- ═══════════════ HEADER ═══════════════ -->
   <header>
     <div class="header-logo">
-      <img src="assets/neroes_logo.png" alt="Neroes" height="38">
+      <img src="assets/neroes_favicon.png" alt="" height="38" aria-hidden="true">
+      <span class="header-logo-text">Neroes</span>
     </div>
     <div class="header-right">
       <div class="live-chip">
