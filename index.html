@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neroes — Prioridades Estratégicas</title>
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+  <link rel="icon" type="image/png" href="assets/neroes_favicon.png">
+  <link rel="apple-touch-icon" href="assets/neroes_favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy-bg:    #2a2840;
+      --navy-base:  #3c3a5f;
+      --navy-light: #4e4c72;
+      --blue-mid:   #465a7b;
+      --teal:       #00a7a0;
+      --teal-light: #00c9c0;
+      --white:      #ffffff;
+      --fire-a:     #f7931e;
+      --fire-b:     #ff5e1a;
+    }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background-color: var(--navy-bg);
+      background-image:
+        radial-gradient(ellipse 55% 45% at 0% 0%, rgba(0,167,160,0.09) 0%, transparent 55%),
+        radial-gradient(circle, rgba(0,167,160,0.10) 1px, transparent 1px);
+      background-size: 100% 100%, 44px 44px;
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 4px; }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.09);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(42,40,64,0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .header-logo img {
+      height: 38px;
+      width: auto;
+      display: block;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .live-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(0,167,160,0.10);
+      border: 1px solid rgba(0,167,160,0.22);
+      border-radius: 100px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--teal-light);
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--teal-light);
+      animation: blink 2.2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,201,192,0.55); }
+      50%       { opacity: 0.4; box-shadow: 0 0 0 5px rgba(0,201,192,0); }
+    }
+
+    .clock {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: rgba(255,255,255,0.38);
+      letter-spacing: 0.05em;
+      min-width: 68px;
+      text-align: right;
+    }
+
+    /* ── MAIN ── */
+    main {
+      padding: 40px 40px 52px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: rgba(255,255,255,0.30);
+      margin-bottom: 18px;
+    }
+
+    /* ── CARD BASE ── */
+    .card {
+      background: var(--navy-base);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+      transition:
+        transform 280ms cubic-bezier(.34,1.56,.64,1),
+        box-shadow 280ms ease,
+        border-color 280ms ease;
+      outline: none;
+    }
+
+    .card:focus-visible {
+      border-color: rgba(255,255,255,0.28);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.12);
+    }
+
+    /* ── CARD FOGO ── */
+    .grid-fogo { margin-bottom: 28px; }
+
+    .card-fogo::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--fire-a), var(--fire-b));
+      z-index: 1;
+    }
+
+    .card-fogo:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 22px 56px rgba(247,147,30,0.16),
+        0 8px 24px rgba(0,0,0,0.32);
+      border-color: rgba(247,147,30,0.22);
+    }
+
+    .fogo-inner {
+      display: flex;
+      align-items: center;
+      padding: 48px 56px;
+      gap: 52px;
+    }
+
+    .fogo-content { flex: 1; min-width: 0; }
+
+    .fogo-visual { flex-shrink: 0; }
+
+    .fire-orb {
+      width: 148px;
+      height: 148px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(247,147,30,0.10) 0%, rgba(247,147,30,0.04) 60%, transparent 100%);
+      border: 2px solid rgba(247,147,30,0.28);
+      box-shadow:
+        0 0 0 10px rgba(247,147,30,0.05),
+        inset 0 0 32px rgba(247,147,30,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 68px;
+      line-height: 1;
+      transition: transform 320ms ease, box-shadow 320ms ease;
+    }
+
+    .card-fogo:hover .fire-orb {
+      transform: scale(1.06);
+      box-shadow:
+        0 0 0 14px rgba(247,147,30,0.08),
+        0 0 48px rgba(247,147,30,0.22),
+        inset 0 0 32px rgba(247,147,30,0.09);
+    }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 11px;
+      border-radius: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      margin-bottom: 14px;
+    }
+
+    .badge-fire  { background: rgba(247,147,30,0.13); border: 1px solid rgba(247,147,30,0.42); color: var(--fire-a); }
+    .badge-teal  { background: rgba(0,167,160,0.12);  border: 1px solid rgba(0,167,160,0.36);  color: var(--teal-light); }
+    .badge-blue  { background: rgba(70,90,123,0.22);  border: 1px solid rgba(70,90,123,0.48);  color: rgba(160,185,220,0.88); }
+
+    .badge-corner {
+      position: absolute;
+      top: 22px;
+      right: 22px;
+      margin-bottom: 0;
+    }
+
+    /* ── CATEGORY LABEL ── */
+    .category-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: rgba(255,255,255,0.38);
+      margin-bottom: 4px;
+    }
+
+    /* ── TITLES ── */
+    .card-fogo .card-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 40px;
+      line-height: 1.08;
+      color: var(--white);
+      margin-bottom: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .card-secondary .card-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      line-height: 1.18;
+      color: var(--white);
+      margin-bottom: 10px;
+      margin-top: 10px;
+    }
+
+    .card-description {
+      font-size: 15px;
+      line-height: 1.70;
+      color: rgba(255,255,255,0.62);
+      margin-bottom: 26px;
+      max-width: 700px;
+    }
+
+    .card-secondary .card-description {
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+
+    /* ── PROGRESS ── */
+    .progress-wrap { margin-bottom: 22px; }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .progress-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.36);
+    }
+
+    .progress-pct {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.78);
+    }
+
+    .progress-track {
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 100px;
+      width: 0%;
+      transition: width 800ms cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .bar-fire { background: linear-gradient(90deg, var(--fire-a), var(--fire-b)); }
+    .bar-teal { background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+    .bar-blue { background: linear-gradient(90deg, var(--blue-mid), var(--navy-light)); }
+
+    /* ── TAGS ── */
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 9px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      color: rgba(255,255,255,0.40);
+    }
+
+    /* ── SECONDARY CARDS ── */
+    .grid-secondary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+    }
+
+    .card-secondary { padding: 34px 34px 30px; }
+
+    .card-secondary::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .card-product::before { background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+    .card-rnd::before     { background: linear-gradient(90deg, var(--blue-mid), var(--navy-light)); }
+
+    .card-product:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0,167,160,0.14), 0 8px 22px rgba(0,0,0,0.30);
+      border-color: rgba(0,167,160,0.20);
+    }
+
+    .card-rnd:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(70,90,123,0.20), 0 8px 22px rgba(0,0,0,0.30);
+      border-color: rgba(70,90,123,0.28);
+    }
+
+    .icon-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-bottom: 4px;
+    }
+
+    .icon-teal { background: rgba(0,167,160,0.13); border: 1px solid rgba(0,167,160,0.24); }
+    .icon-blue { background: rgba(70,90,123,0.20); border: 1px solid rgba(70,90,123,0.34); }
+
+    .secondary-progress-wrap { margin-top: 22px; margin-bottom: 16px; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .footer-areas { display: flex; gap: 36px; }
+
+    .footer-area { display: flex; align-items: center; gap: 10px; }
+
+    .footer-area-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: rgba(255,255,255,0.32);
+      width: 56px;
+    }
+
+    .footer-mini-bar {
+      width: 58px;
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .footer-mini-fill {
+      height: 100%;
+      border-radius: 100px;
+      transition: width 1100ms ease;
+    }
+
+    .footer-pct {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: rgba(255,255,255,0.36);
+      min-width: 28px;
+    }
+
+    .footer-location {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: rgba(255,255,255,0.18);
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(20,18,40,0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 240ms ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-box {
+      background: var(--navy-base);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 88vh;
+      overflow-y: auto;
+      position: relative;
+      transform: scale(0.96) translateY(22px);
+      transition: transform 360ms cubic-bezier(.34,1.56,.64,1);
+    }
+
+    .modal-overlay.open .modal-box {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-top-bar {
+      height: 3px;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .mtb-fire { background: linear-gradient(90deg, var(--fire-a), var(--fire-b)); }
+    .mtb-teal { background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+    .mtb-blue { background: linear-gradient(90deg, var(--blue-mid), var(--navy-light)); }
+
+    .modal-body { padding: 32px; }
+
+    .modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 26px;
+      line-height: 1.15;
+      color: var(--white);
+    }
+
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.55);
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 180ms, color 180ms;
+      line-height: 1;
+      font-family: inherit;
+    }
+
+    .modal-close:hover { background: rgba(255,255,255,0.12); color: var(--white); }
+
+    .modal-desc {
+      font-size: 14px;
+      line-height: 1.72;
+      color: rgba(255,255,255,0.62);
+      margin-bottom: 26px;
+    }
+
+    .modal-progress-wrap { margin-bottom: 26px; }
+
+    .modal-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+
+    .metric-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 16px 10px;
+      text-align: center;
+    }
+
+    .metric-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      color: var(--white);
+      margin-bottom: 5px;
+      line-height: 1;
+    }
+
+    .metric-lbl {
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.38);
+    }
+
+    .modal-extra {
+      font-size: 13px;
+      line-height: 1.72;
+      color: rgba(255,255,255,0.46);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: 20px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .fogo-inner { flex-direction: column-reverse; padding: 36px 30px; gap: 28px; }
+      .card-fogo .card-title { font-size: 28px; }
+      .fire-orb { width: 100px; height: 100px; font-size: 46px; }
+      .grid-secondary { grid-template-columns: 1fr; }
+      main { padding: 28px 22px 40px; }
+      header, footer { padding-left: 22px; padding-right: 22px; }
+    }
+
+    @media (max-width: 600px) {
+      .card-fogo .card-title { font-size: 22px; }
+      .card-description { font-size: 13px; }
+      .modal-metrics { grid-template-columns: 1fr 1fr; }
+      .footer-areas { gap: 18px; }
+      .footer-location { display: none; }
+      .clock { display: none; }
+      header { padding: 14px 18px; }
+      main { padding: 20px 18px 32px; }
+      footer { padding: 14px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1 class="sr-only">Neroes — Painel de Prioridades Estratégicas</h1>
+
+  <!-- ═══════════════ HEADER ═══════════════ -->
+  <header>
+    <div class="header-logo">
+      <img src="assets/neroes_logo.png" alt="Neroes" height="38">
+    </div>
+    <div class="header-right">
+      <div class="live-chip">
+        <span class="live-dot" aria-hidden="true"></span>
+        sistema ativo
+      </div>
+      <div class="clock" id="clock" aria-live="polite" aria-label="Hora atual">--:--:--</div>
+    </div>
+  </header>
+
+  <!-- ═══════════════ MAIN ═══════════════ -->
+  <main>
+
+    <!-- ROW 1 — FOGO -->
+    <div class="grid-fogo">
+      <p class="section-label">Prioridade #01 — Foco Principal</p>
+      <article
+        class="card card-fogo"
+        tabindex="0"
+        role="button"
+        aria-label="Ver detalhes: Negócio — Conseguir Dinheiro das Escolas"
+        onclick="openModal('fogo')"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('fogo')}">
+        <div class="fogo-inner">
+          <div class="fogo-content">
+            <div class="category-label">Negócio</div>
+            <div class="badge badge-fire">#01 — URGENTE</div>
+            <h2 class="card-title">Conseguir Dinheiro das Escolas</h2>
+            <p class="card-description">Pipeline de vendas B2B no sector educativo. Fechar contratos com escolas e instituições de ensino em Portugal e Espanha para validar o modelo comercial institucional.</p>
+            <div class="progress-wrap">
+              <div class="progress-header">
+                <span class="progress-label">Progresso</span>
+                <span class="progress-pct">35%</span>
+              </div>
+              <div class="progress-track"
+                role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso: 35%">
+                <div class="progress-bar bar-fire" data-target="35"></div>
+              </div>
+            </div>
+            <div class="tags">
+              <span class="tag">Vendas B2B</span>
+              <span class="tag">Educação</span>
+              <span class="tag">Contratos</span>
+              <span class="tag">Portugal</span>
+            </div>
+          </div>
+          <div class="fogo-visual" aria-hidden="true">
+            <div class="fire-orb">🔥</div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ROW 2 — PRODUCT + R&D -->
+    <div class="grid-secondary">
+
+      <!-- PRODUCT -->
+      <article
+        class="card card-secondary card-product"
+        tabindex="0"
+        role="button"
+        aria-label="Ver detalhes: Product — Atualizar Bibliotecas de Dados"
+        onclick="openModal('product')"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('product')}">
+        <div class="badge badge-teal badge-corner">#02 — ALTO</div>
+        <div class="icon-box icon-teal" aria-hidden="true">⚡</div>
+        <div class="category-label">Product</div>
+        <h2 class="card-title">Atualizar Bibliotecas de Dados</h2>
+        <p class="card-description">Modernização do stack de processamento de dados da Mental Training Platform™. Performance e escalabilidade para o crescimento sustentado.</p>
+        <div class="secondary-progress-wrap">
+          <div class="progress-header">
+            <span class="progress-label">Progresso</span>
+            <span class="progress-pct">58%</span>
+          </div>
+          <div class="progress-track"
+            role="progressbar" aria-valuenow="58" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso: 58%">
+            <div class="progress-bar bar-teal" data-target="58"></div>
+          </div>
+        </div>
+        <div class="tags">
+          <span class="tag">Tech</span>
+          <span class="tag">Dados</span>
+          <span class="tag">Platform</span>
+          <span class="tag">ML</span>
+        </div>
+      </article>
+
+      <!-- R&D -->
+      <article
+        class="card card-secondary card-rnd"
+        tabindex="0"
+        role="button"
+        aria-label="Ver detalhes: R&D — Construir o AI OS"
+        onclick="openModal('rnd')"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('rnd')}">
+        <div class="badge badge-blue badge-corner">#03 — MÉDIO</div>
+        <div class="icon-box icon-blue" aria-hidden="true">🧠</div>
+        <div class="category-label">R&D</div>
+        <h2 class="card-title">Construir o AI OS</h2>
+        <p class="card-description">Sistema operativo de inteligência artificial para orquestrar treino mental e análise neurológica avançada em tempo real.</p>
+        <div class="secondary-progress-wrap">
+          <div class="progress-header">
+            <span class="progress-label">Progresso</span>
+            <span class="progress-pct">22%</span>
+          </div>
+          <div class="progress-track"
+            role="progressbar" aria-valuenow="22" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso: 22%">
+            <div class="progress-bar bar-blue" data-target="22"></div>
+          </div>
+        </div>
+        <div class="tags">
+          <span class="tag">AI</span>
+          <span class="tag">Investigação</span>
+          <span class="tag">Neurotec</span>
+          <span class="tag">EEG</span>
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer>
+    <div class="footer-areas">
+      <div class="footer-area">
+        <span class="footer-area-name">Negócio</span>
+        <div class="footer-mini-bar">
+          <div class="footer-mini-fill bar-fire" data-target="35" style="width:0%"></div>
+        </div>
+        <span class="footer-pct">35%</span>
+      </div>
+      <div class="footer-area">
+        <span class="footer-area-name">Product</span>
+        <div class="footer-mini-bar">
+          <div class="footer-mini-fill bar-teal" data-target="58" style="width:0%"></div>
+        </div>
+        <span class="footer-pct">58%</span>
+      </div>
+      <div class="footer-area">
+        <span class="footer-area-name">R&D</span>
+        <div class="footer-mini-bar">
+          <div class="footer-mini-fill bar-blue" data-target="22" style="width:0%"></div>
+        </div>
+        <span class="footer-pct">22%</span>
+      </div>
+    </div>
+    <span class="footer-location">Lisboa, Portugal · Neroes Tech</span>
+  </footer>
+
+  <!-- ═══════════════ MODAIS ═══════════════ -->
+
+  <!-- MODAL FOGO -->
+  <div class="modal-overlay" id="modal-fogo"
+    role="dialog" aria-modal="true" aria-labelledby="mtitle-fogo"
+    onclick="if(event.target===this)closeModal('fogo')">
+    <div class="modal-box">
+      <div class="modal-top-bar mtb-fire"></div>
+      <div class="modal-body">
+        <div class="modal-head">
+          <div>
+            <div class="badge badge-fire" style="margin-bottom:10px">#01 — URGENTE</div>
+            <h3 class="modal-title" id="mtitle-fogo">Conseguir Dinheiro das Escolas</h3>
+          </div>
+          <button class="modal-close" onclick="closeModal('fogo')" aria-label="Fechar modal">✕</button>
+        </div>
+        <p class="modal-desc">Pipeline de vendas B2B no sector educativo. Fechar contratos com escolas e instituições de ensino em Portugal e Espanha para validar o modelo comercial institucional.</p>
+        <div class="modal-progress-wrap">
+          <div class="progress-header">
+            <span class="progress-label">Progresso geral</span>
+            <span class="progress-pct">35%</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar bar-fire" style="width:35%"></div>
+          </div>
+        </div>
+        <div class="modal-metrics">
+          <div class="metric-card">
+            <div class="metric-num">12</div>
+            <div class="metric-lbl">Reuniões agendadas</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-num">3</div>
+            <div class="metric-lbl">Propostas enviadas</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-num">35%</div>
+            <div class="metric-lbl">Progresso</div>
+          </div>
+        </div>
+        <p class="modal-extra">Inclui reuniões com direções, demonstrações da Brain Experience™ e propostas comerciais adaptadas ao orçamento do sector educativo público e privado.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PRODUCT -->
+  <div class="modal-overlay" id="modal-product"
+    role="dialog" aria-modal="true" aria-labelledby="mtitle-product"
+    onclick="if(event.target===this)closeModal('product')">
+    <div class="modal-box">
+      <div class="modal-top-bar mtb-teal"></div>
+      <div class="modal-body">
+        <div class="modal-head">
+          <div>
+            <div class="badge badge-teal" style="margin-bottom:10px">#02 — ALTO</div>
+            <h3 class="modal-title" id="mtitle-product">Atualizar Bibliotecas de Dados</h3>
+          </div>
+          <button class="modal-close" onclick="closeModal('product')" aria-label="Fechar modal">✕</button>
+        </div>
+        <p class="modal-desc">Modernização do stack de processamento de dados da Mental Training Platform™. Performance e escalabilidade para o crescimento sustentado.</p>
+        <div class="modal-progress-wrap">
+          <div class="progress-header">
+            <span class="progress-label">Progresso geral</span>
+            <span class="progress-pct">58%</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-valuenow="58" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar bar-teal" style="width:58%"></div>
+          </div>
+        </div>
+        <div class="modal-metrics">
+          <div class="metric-card">
+            <div class="metric-num">7</div>
+            <div class="metric-lbl">Bibliotecas em update</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-num">−40%</div>
+            <div class="metric-lbl">Latência estimada</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-num">58%</div>
+            <div class="metric-lbl">Progresso</div>
+          </div>
+        </div>
+        <p class="modal-extra">Inclui migração para versões recentes dos frameworks de análise de EEG, otimização do pipeline em tempo real, e melhoria dos algoritmos adaptativos que personalizam o treino a cada utilizador.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL R&D -->
+  <div class="modal-overlay" id="modal-rnd"
+    role="dialog" aria-modal="true" aria-labelledby="mtitle-rnd"
+    onclick="if(event.target===this)closeModal('rnd')">
+    <div class="modal-box">
+      <div class="modal-top-bar mtb-blue"></div>
+      <div class="modal-body">
+        <div class="modal-head">
+          <div>
+            <div class="badge badge-blue" style="margin-bottom:10px">#03 — MÉDIO</div>
+            <h3 class="modal-title" id="mtitle-rnd">Construir o AI OS</h3>
+          </div>
+          <button class="modal-close" onclick="closeModal('rnd')" aria-label="Fechar modal">✕</button>
+        </div>
+        <p class="modal-desc">Sistema operativo de inteligência artificial para orquestrar treino mental e análise neurológica avançada em tempo real.</p>
+        <div class="modal-progress-wrap">
+          <div class="progress-header">
+            <span class="progress-label">Progresso geral</span>
+            <span class="progress-pct">22%</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-valuenow="22" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar bar-blue" style="width:22%"></div>
+          </div>
+        </div>
+        <div class="modal-metrics">
+          <div class="metric-card">
+            <div class="metric-num">4</div>
+            <div class="metric-lbl">Modelos em teste</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-num">1.2K</div>
+            <div class="metric-lbl">Sessões analisadas</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-num">22%</div>
+            <div class="metric-lbl">Progresso</div>
+          </div>
+        </div>
+        <p class="modal-extra">Integra modelos de deep learning treinados com dados reais de neurofeedback, permitindo que a plataforma aprenda e evolua com cada utilizador de forma completamente adaptativa.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SCRIPTS ═══════════════ -->
+  <script>
+    /* Clock */
+    function tick() {
+      document.getElementById('clock').textContent =
+        new Date().toLocaleTimeString('pt-PT', { hour12: false });
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    /* Progress bars — animate 400ms after load */
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.querySelectorAll('.progress-bar[data-target]').forEach(el => {
+          el.style.width = el.dataset.target + '%';
+        });
+        document.querySelectorAll('.footer-mini-fill[data-target]').forEach(el => {
+          el.style.width = el.dataset.target + '%';
+        });
+      }, 400);
+    });
+
+    /* Modal */
+    let _lastFocus = null;
+
+    function openModal(id) {
+      _lastFocus = document.activeElement;
+      const overlay = document.getElementById('modal-' + id);
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      const btn = overlay.querySelector('.modal-close');
+      if (btn) setTimeout(() => btn.focus(), 60);
+    }
+
+    function closeModal(id) {
+      const overlay = document.getElementById('modal-' + id);
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+      if (_lastFocus) _lastFocus.focus();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.open').forEach(o => {
+          closeModal(o.id.replace('modal-', ''));
+        });
+      }
+    });
+  </script>
+</body>
+</html>
